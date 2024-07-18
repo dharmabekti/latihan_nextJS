@@ -14,7 +14,7 @@ const LoginViews = () => {
   };
   return (
     <div className={styles.login}>
-      <h1>Login Page</h1>
+      <h1 className="text-3xl font-bold">Login Page</h1>
       <button onClick={() => handleLogin()}>Login</button>
       <br />
       <p
