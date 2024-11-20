@@ -17,11 +17,15 @@ export default function withAuth(
         req,
         secret: process.env.NEXTAUTH_SECRET,
       });
+      console.log({ req, token });
+
       if (!token) {
-        const url = new URL("/", req.url);
+        const url = new URL("/auth/login", req.url);
+        url.searchParams.set("callbackUrl", encodeURI(req.url));
         return NextResponse.redirect(url);
       }
-      return middleware(req, next);
     }
+
+    return middleware(req, next);
   };
 }

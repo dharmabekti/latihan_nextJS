@@ -1,3 +1,5 @@
+import { signIn } from "@/lib/firebase/service";
+import { compare } from "bcrypt";
 import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import CredencialsProvider from "next-auth/providers/credentials";
@@ -20,15 +22,13 @@ const authOptions: NextAuthOptions = {
           email: string;
           password: string;
         };
-        const user: any = {
-          id: 1,
-          fullname: "Ki Anom",
-          email: email,
-          password: password,
-        };
+        const user: any = await signIn({ email });
         if (user) {
-          //   console.log(user);
-          return user;
+          const passwordConfirm = await compare(password, user.password);
+          if (passwordConfirm) {
+            return user;
+          }
+          return null;
         } else {
           return null;
         }
@@ -40,8 +40,9 @@ const authOptions: NextAuthOptions = {
       if (account?.provider === "credentials") {
         token.email = user.email;
         token.fullname = user.fullname;
+        token.role = user.role;
       }
-      //   console.log({ token, account, user });
+      // console.log({ token, account, user });
       return token;
     },
 
@@ -52,9 +53,15 @@ const authOptions: NextAuthOptions = {
       if ("fullname" in token) {
         session.user.fullname = token.fullname;
       }
-      //   console.log({ session, token });
+      if ("role" in token) {
+        session.user.role = token.role;
+      }
+      console.log({ session, token });
       return session;
     },
+  },
+  pages: {
+    signIn: "/auth/login",
   },
 };
 
