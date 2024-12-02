@@ -1,8 +1,9 @@
-import { signIn } from "@/lib/firebase/service";
+import { signIn, signInWithGoogle } from "@/lib/firebase/service";
 import { compare } from "bcrypt";
 import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import CredencialsProvider from "next-auth/providers/credentials";
+import GoogleAuthProvider from "next-auth/providers/google";
 
 const authOptions: NextAuthOptions = {
   session: {
@@ -34,13 +35,38 @@ const authOptions: NextAuthOptions = {
         }
       },
     }),
+    GoogleAuthProvider({
+      clientId: process.env.GOOGLE_OAUTH_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET || "",
+    }),
   ],
   callbacks: {
-    jwt({ token, account, profile, user }: any) {
+    async jwt({ token, account, profile, user }: any) {
       if (account?.provider === "credentials") {
         token.email = user.email;
         token.fullname = user.fullname;
         token.role = user.role;
+      }
+      if (account?.provider === "google") {
+        const data = {
+          fullname: user.name,
+          email: user.email,
+          image: user.image,
+          type: "google",
+        };
+        // console.log(data);
+        await signInWithGoogle(
+          data,
+          (result: { status: boolean; message: string; data: any }) => {
+            if (result.status) {
+              token.email = result.data.email;
+              token.fullname = result.data.fullname;
+              token.image = result.data.image;
+              token.type = result.data.type;
+              token.role = result.data.role;
+            }
+          }
+        );
       }
       // console.log({ token, account, user });
       return token;
@@ -52,6 +78,9 @@ const authOptions: NextAuthOptions = {
       }
       if ("fullname" in token) {
         session.user.fullname = token.fullname;
+      }
+      if ("image" in token) {
+        session.user.image = token.image;
       }
       if ("role" in token) {
         session.user.role = token.role;

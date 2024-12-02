@@ -74,6 +74,17 @@ const LoginView = () => {
             {isLoading ? "Loading..." : "Sign In"}
           </button>
         </form>
+        <button
+          className={style.login__form__google}
+          onClick={() =>
+            signIn("google", {
+              redirect: false,
+              callbackUrl,
+            })
+          }
+        >
+          Sign In with Google
+        </button>
       </div>
       <p className={style.login__link}>
         Don't have an account? Sign up <Link href="/auth/register">here</Link>
