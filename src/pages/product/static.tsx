@@ -12,15 +12,15 @@ const ProductPage = (props: { products: productType[] }) => {
 
 export default ProductPage;
 
-export async function getStaticProps() {
-  //   fetch Data
-  const res = await fetch("http://localhost:3000/api/product");
-  const response = await res.json();
-  console.log(response);
-  return {
-    props: {
-      products: response.data,
-    },
-    // revalidate: 10,
-  };
-}
+// export async function getStaticProps() {
+//   //   fetch Data
+//   const res = await fetch("http://localhost:3000/api/product");
+//   const response = await res.json();
+//   console.log(response);
+//   return {
+//     props: {
+//       products: response.data,
+//     },
+//     // revalidate: 10,
+//   };
+// }

@@ -31,13 +31,41 @@ const DetailProductPage = ({ product }: { product: productType }) => {
 
 export default DetailProductPage;
 
-// export async function getServerSideProps({
-//   params,
-// }: {
-//   params: { id: string };
-// }) {
-//   console.log(params);
+export async function getServerSideProps({
+  params,
+}: {
+  params: { id: string };
+}) {
+  console.log(params);
 
+  //   fetch Data
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/product/${params.id}`
+  );
+  const response = await res.json();
+  console.log(response);
+  return {
+    props: {
+      product: response.data,
+    },
+  };
+}
+
+// eslint-disable-next-line @next/next/no-typos
+// export async function getStaticPaths() {
+//   const res = await fetch("http://localhost:3000/api/product");
+//   const response = await res.json();
+//   const paths = response.data.map((product: productType) => ({
+//     params: {
+//       id: product.id,
+//     },
+//   }));
+//   // console.log(paths);
+//   return { paths, fallback: false };
+// }
+
+// export async function getStaticProps({ params }: { params: { id: string } }) {
+//   console.log(params);
 //   //   fetch Data
 //   const res = await fetch(`http://localhost:3000/api/product/${params.id}`);
 //   const response = await res.json();
@@ -48,29 +76,3 @@ export default DetailProductPage;
 //     },
 //   };
 // }
-
-// eslint-disable-next-line @next/next/no-typos
-export async function getStaticPaths() {
-  const res = await fetch("http://localhost:3000/api/product");
-  const response = await res.json();
-  const paths = response.data.map((product: productType) => ({
-    params: {
-      id: product.id,
-    },
-  }));
-  // console.log(paths);
-  return { paths, fallback: false };
-}
-
-export async function getStaticProps({ params }: { params: { id: string } }) {
-  console.log(params);
-  //   fetch Data
-  const res = await fetch(`http://localhost:3000/api/product/${params.id}`);
-  const response = await res.json();
-  console.log(response);
-  return {
-    props: {
-      product: response.data,
-    },
-  };
-}
